@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Thermic Effect of Food Calculator</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f1f0f0;
+      padding: 15rem;
+    }
+
+    .calculator {
+      text-align: center;
+      padding: 20px;
+      border: 1.5px solid #5e5e5e;
+      border-radius: 10px;
+      background-color: #ccc;
+    }
+
+    .calculator label{
+      display: inline-block;
+      width: 300px;
+      text-align: right;
+
+      margin-right: 10px;
+    }
+    .calculator input[type="number"],
+    .calculator select {
+      display: inline-block;
+      width: 6rem;
+      margin-bottom: 10px;
+      margin-left: 10px;
+      border-radius: 6px;
+    }
+
+    .calculator button {
+      display: block;
+      margin-bottom: 10px;
+      margin-top: 3rem;
+    }
+
+
+    #CalcBtn{
+        background-color: rgba(27, 118, 255, 0.952);
+        width: 8rem;
+        height: 3rem;
+        border-radius: 18px;
+    }
+
+    #tefCalculator {
+      grid-gap:5px;
+
+  }
+
+  input{
+    border-radius: 5px;
+  }
+
+  .macrosP{
+    width: 4rem;
+  }
+
+  #fatSetting{
+    width: 6rem;
+  }
+  br{
+    padding-top: 5rem;
+  }
+
+
+  span {
+    display: table-cell;
+    padding: 0 4px 0 6px;
+  }
+
+  .calculator .input-group {
+    margin-bottom: 10px;
+  }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h1>Thermic Effect of Food Calculator</h1>
+
+    <form id="tefCalculator">
+
+      <div class="input-group">
+        <label id="tCals" for="totalCalories"><h3>Total Calories:</h3></label>
+        <input type="number" id="totalCalories" min="0" required>
+      </div>
+
+      <div class="input-group">
+        <label for="protein"><h4>Protein (% of total calories):</h4></label>
+        <input class="macrosP" type="number" id="protein" min="0" step="0.1" required>
+      </div>
+
+      <div class="input-group">
+        <label for="carbs"><h4>Carbohydrates (% of total calories):</h4></label>
+        <input class="macrosP" type="number" id="carbs" min="0" step="0.1" required>
+      </div>
+
+      <div class="input-group">
+        <label for="fatSetting"><h4>Fat Optinal:</h4></label>
+        <select id="fatSetting" onchange="handleFatSetting()">
+          <option value="manual">Manual</option>
+          <option value="zero">Zero</option>
+        </select>
+      </div>
+
+      <div id="fatOptions">
+        <label for="fat"><h4>Fat (% of total calories):</h4></label>
+        <input class="macrosP" type="number" id="fat" min="0" step="0.1" required>
+      </div>
+
+
+      <div class="input-group">
+        <label for="proteinTEF"><h4>Protein TEF (%):</h4></label>
+        <select class="macrosP" id="proteinTEF">
+          <option value="20">20%</option>
+          <option value="25">25%</option>
+          <option value="30">30%</option>
+        </select><br>
+      </div>
+
+      <label for="carbsTEF"><h4>Carbs TEF (%):</h4></label>
+      <select class="macrosP" id="carbsTEF">
+        <option value="5">5%</option>
+        <option value="10">10%</option>
+        <option value="15">15%</option>
+      </select><br>
+
+      <button id="CalcBtn" type="button" onclick="calculateTEF()"><h3>Calculate</h3></button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    function handleFatSetting() {
+      var fatSetting = document.getElementById("fatSetting").value;
+      var fatOptions = document.getElementById("fatOptions");
+
+      if (fatSetting === "zero") {
+        fatOptions.style.display = "none";
+      } else if (fatSetting === "manual") {
+        fatOptions.style.display = "block";
+      }
+    }
+
+    function calculateTEF() {
+      var proteinPercent = parseFloat(document.getElementById("protein").value);
+      var carbsPercent = parseFloat(document.getElementById("carbs").value);
+      var totalCalories = parseFloat(document.getElementById("totalCalories").value);
+      var proteinTEF = parseFloat(document.getElementById("proteinTEF").value) / 100;
+      var carbsTEF = parseFloat(document.getElementById("carbsTEF").value) / 100;
+
+      var proteinCalories = (proteinPercent / 100) * totalCalories;
+      var carbsCalories = (carbsPercent / 100) * totalCalories;
+
+      var fatSetting = document.getElementById("fatSetting").value;
+      var fatCalories = 0;
+
+      if (fatSetting === "manual") {
+        var fatPercent = parseFloat(document.getElementById("fat").value);
+        fatCalories = (fatPercent / 100) * totalCalories;
+      }
+
+      var proteinTEFValue = proteinCalories * proteinTEF;
+      var carbsTEFValue = carbsCalories * carbsTEF;
+      var fatTEFValue = fatCalories * 0.01; // Assuming 1% thermic effect for fat
+
+      var totalTEF = proteinTEFValue + carbsTEFValue + fatTEFValue;
+
+      var netCalories = totalCalories - totalTEF;
+
+      document.getElementById("result").innerHTML = "<h2>" + "Net Calories: " + netCalories.toFixed(2) + "</h2>"
+                                        + "<br>" + " - From Protine: " + proteinTEFValue.toFixed(2)
+                                        + "<br>" + " - From Carbs: " + carbsTEFValue.toFixed(2)
+                                        + "<br>" + " - From Fat: " + fatTEFValue.toFixed(2);
+    }
+  </script>
+</body>
+</html>
